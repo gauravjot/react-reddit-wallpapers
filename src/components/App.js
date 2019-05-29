@@ -94,8 +94,8 @@ class App extends React.Component {
           </button>
           <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.state.allSubreddit)}>All Below</a>
-            {this.state.subreddits.map((subreddit) => (
-              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(subreddit)}>r/{subreddit}</a>
+            {this.state.subreddits.map((subreddit, index) => (
+              <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSubreddit(subreddit)}>r/{subreddit}</a>
             ))}
           </div>
         </div>
