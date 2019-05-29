@@ -54,6 +54,7 @@ class App extends React.Component {
 
   changeSubreddit(sub) {
     this.setState({subreddit: sub});
+    this.setState({page: 1})
     fetch(this.state.url + sub + this.state.sort + '.json')
     .then(res => res.json())
     .then((data) => {
