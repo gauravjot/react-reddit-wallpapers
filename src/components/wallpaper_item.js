@@ -9,7 +9,6 @@ const WallpaperItem = ({file}) => {
                 <div className="card">
                     <div className="card-img-top">
                         <img src={previewImage} width="100%" alt={file.data.title}/>
-                        {console.log(file)}
                     </div>
                 </div>
                 {file.data.name}

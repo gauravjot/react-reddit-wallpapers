@@ -1,5 +1,5 @@
 import React from 'react';
-import Wallpapers from './components/wallpapers';
+import Wallpapers from './wallpapers';
 
 class App extends React.Component {
 
@@ -21,8 +21,8 @@ class App extends React.Component {
     .catch(console.log)
   }
 
-  nextPage() {
-      fetch(this.state.url + "?after=" + this.state.after)
+  nextPage = ()=> {
+      fetch(this.state.url + "?count=25&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
         this.setState({files: data.data.children});
@@ -32,36 +32,38 @@ class App extends React.Component {
       .catch(console.log)
   }
 
-  prevPage() {
-    fetch(this.state.url + "?before=" + this.state.before)
+  prevPage = ()=> {
+    fetch(this.state.url + "?count=25&before=" + this.state.before)
     .then(res => res.json())
     .then((data) => {
       this.setState({files: data.data.children});
       this.setState({after: data.data.after});
-      this.setState({before: data.data.before})
+      this.setState({before: data.data.before});
     })
     .catch(console.log)
-}
+  }
 
   render () {
     let pagingJSX;
     const buttonNext = <input className="btn btn-primary" type="submit" value="Next" onClick={this.nextPage}/>;
-    const buttonPrev = <input className="btn btn-primary" type="submit" value="Next" onClick={this.prevPage}/>;
-    if (this.props.before != null && this.props.after != null) {
-        // in between pages
-        pagingJSX = <div>{buttonPrev} {buttonNext}</div>;
-    } else if (this.props.before == null && this.props.after != null) {
+    const buttonPrev = <input className="btn btn-primary" type="submit" value="Prev" onClick={this.prevPage}/>;
+        console.log(this.state.after);
+        console.log(this.state.before);
+    if (this.state.after === null) {
+        // last page
+        pagingJSX = <div>{buttonPrev}</div>;
+    } else if (this.state.before === null) {
         // first page
         pagingJSX = <div>{buttonNext}</div>;
     } else {
-        // last page
-        pagingJSX = <div>{buttonPrev}</div>;
+        // in between pages
+        pagingJSX = <div>{buttonPrev} {buttonNext}</div>;
     }
 
     return (
       <div className="container">
         <Wallpapers files={this.state.files}/>
-        <div class="center">{pagingJSX}</div>
+        <div className="center">{pagingJSX}</div>
       </div>
     );
   }
