@@ -33,12 +33,12 @@ class App extends React.Component {
     fetch(this.url + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
-        this.setState({
+        this.setState(() => ({
           files: data.data.children,
           after: data.data.after,
           before: data.data.before,
           page: this.state.page + 1
-        });
+        }));
         window.scrollTo(0, 0);
       })
       .catch(console.log)
@@ -123,15 +123,17 @@ class App extends React.Component {
       let pagingJSX;
       const buttonNext = <button className="btn btn-primary" type="submit" onClick={this.nextPage}>Next</button>;
       const buttonPrev = <button className="btn btn-secondary" type="submit" onClick={this.prevPage}>Previous</button>;
-      if (this.state.after === null) {
+      if (this.state.after === null && this.state.before !== null) {
           // last page
           pagingJSX = <div>{buttonPrev}</div>;
-      } else if (this.state.before === null) {
+      } else if (this.state.before === null && this.state.after !== null) {
           // first page
           pagingJSX = <div>{buttonNext}</div>;
-      } else {
+      } else if (this.state.before !== null && this.state.after !== null) {
           // in between pages
           pagingJSX = <div>{buttonPrev} <span className="p-3 text-black-50">Page {this.state.page}</span> {buttonNext}</div>;
+      } else {
+        pagingJSX = <div>No Posts found.</div>;
       }
       contentJSX = <div className="m-2"><Wallpapers files={this.state.files}/><br/><div className="center-block m-2">{pagingJSX}</div></div>;
     } else {
@@ -182,7 +184,7 @@ class App extends React.Component {
         <br/>
         {contentJSX}
         <br/>
-        <footer><center><p>Open-source available on <a href="https://github.com/gauravjot/react-reddit-wallpapers">Github</a>.</p></center></footer>
+        <footer><center><p>Open-source available on <a href="https://github.com/gauravjot/react-reddit-wallpapers">Github</a>.<br/>Some images can be explicit, please use it on your own risk.</p></center></footer>
       </div>
     );
   }
