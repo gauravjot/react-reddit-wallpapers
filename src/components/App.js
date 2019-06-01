@@ -10,7 +10,6 @@ class App extends React.Component {
     this.wallpaperSubreddits = 'wallpapers+wallpaper+widescreenwallpaper+wqhd_wallpaper';
     this.portraitSubreddits = 'mobilewallpapers+amoledbackgrounds+verticalwallpapers';
     this.memesSubreddits = 'memes+dankmemes+memeeconomy+animemes';
-    this.allSubreddits = 'wallpapers+wallpaper+widescreenwallpaper+wqhd_wallpaper+memes+dankmemes+memeeconomy+animemes';
     this.subredditsArray = ['wallpaper','wallpapers','widescreenwallpaper','wqhd_wallpaper','memes', 'dankmemes', 'memeeconomy','animemes', 
                                       'mobilewallpapers', 'amoledbackgrounds', 'verticalwallpapers'];
     this.url = 'https://www.reddit.com/r/';
