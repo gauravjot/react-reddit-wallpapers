@@ -9,11 +9,11 @@
     margin-bottom: 16px
 }
 
-.card-title, .card-link .card-text a {
+.card-title, .card-link .card-title a {
     color: #007bff;
 }
 
-.card-title:hover, .card-link .card-text a:hover {
+.card-title:hover, .card-link .card-title a:hover {
     text-decoration: underline;
 }
 

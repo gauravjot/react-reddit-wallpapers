@@ -90,7 +90,7 @@ class App extends React.Component {
     if (subreddit.length !== 0) {
       this.changeSubreddit(subreddit);
     } else {
-      this.changeSubreddit(this.allSubreddits);
+      this.changeSubreddit(this.wallpaperSubreddits);
     }
   }
 
