@@ -3,7 +3,8 @@ import React from 'react';
 const WallpaperItem = ({file}) => {
     if (file.data.preview) {
         if( file.data.preview.enabled) {
-            let previewImage = file.data.preview ? file.data.preview.images[0].resolutions[2].url : "http://dummyimage.com";
+            console.log(file.data);
+            let previewImage = file.data.preview.images[0].resolutions[file.data.preview.images[0].resolutions.length - 1].url;
             previewImage = previewImage.replace(/&amp;/g,"&");
             let subreddit = "https://reddit.com/r/" + file.data.subreddit;
             let post_link = "https://reddit.com" + file.data.permalink;
@@ -14,7 +15,7 @@ const WallpaperItem = ({file}) => {
                         <div className="card-img-top">
                             <a href={post_link} target="_blank" rel="noopener noreferrer"><button className="btn btn-secondary btn-sm top-right-float">View Post</button></a>
                             <a href={file.data.url} target="_blank" rel="noopener noreferrer">
-                                {(file.data.over_18) ? <div>NSFW</div> : <img src={previewImage} className="card-img-top" width="100%" alt={file.data.title}/>}
+                                {(file.data.over_18) ? <div className="p-4">NSFW</div> : <img src={previewImage} className="card-img-top" width="100%" alt={file.data.title}/>}
                             </a>
                         </div>
                         <div className="card-body">

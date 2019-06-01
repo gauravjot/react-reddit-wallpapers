@@ -8,9 +8,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.wallpaperSubreddits = 'wallpapers+wallpaper+widescreenwallpaper+wqhd_wallpaper';
+    this.portraitSubreddits = 'mobilewallpapers+amoledbackgrounds+verticalwallpapers';
     this.memesSubreddits = 'memes+dankmemes+memeeconomy+animemes';
     this.allSubreddits = 'wallpapers+wallpaper+widescreenwallpaper+wqhd_wallpaper+memes+dankmemes+memeeconomy+animemes';
-    this.subredditsArray = ['wallpaper','wallpapers','widescreenwallpaper','wqhd_wallpaper','memes', 'dankmemes', 'memeeconomy','animemes'];
+    this.subredditsArray = ['wallpaper','wallpapers','widescreenwallpaper','wqhd_wallpaper','memes', 'dankmemes', 'memeeconomy','animemes', 
+                                      'mobilewallpapers', 'amoledbackgrounds', 'verticalwallpapers'];
     this.url = 'https://www.reddit.com/r/';
     this.sorts = ['hot','new','top','controversial','rising'];
   }
@@ -28,62 +30,83 @@ class App extends React.Component {
     this.changeSubreddit(this.state.currentSubreddit);
   }
 
-  nextPage = ()=> {
-      fetch(this.url + this.state.currentSubreddit + "/" + this.state.sort + ".json?count="+ (this.state.page * 25) +"&after=" + this.state.after)
+  nextPage = () => {
+    fetch(this.url + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (this.state.page * 25) + "&after=" + this.state.after)
       .then(res => res.json())
       .then((data) => {
-        this.setState({files: data.data.children});
-        this.setState({after: data.data.after});
-        this.setState({before: data.data.before});
-        this.setState({page: this.state.page + 1});
-      window.scrollTo(0,0);
+        this.setState({
+          files: data.data.children,
+          after: data.data.after,
+          before: data.data.before,
+          page: this.state.page + 1
+        });
+        window.scrollTo(0, 0);
       })
       .catch(console.log)
   }
 
-  prevPage = ()=> {
-    fetch(this.url + this.state.currentSubreddit + "/" + this.state.sort + ".json?count="+ (((this.state.page - 1) * 25) - 1) +"&before=" + this.state.before)
-    .then(res => res.json())
-    .then((data) => {
-      this.setState({files: data.data.children});
-      this.setState({after: data.data.after});
-      this.setState({before: data.data.before});
-    window.scrollTo(0,0);
-      if (this.state.page > 1) {
-        this.setState({page: this.state.page - 1});
-      }
-    })
-    .catch(console.log)
+  prevPage = () => {
+    fetch(this.url + this.state.currentSubreddit + "/" + this.state.sort + ".json?count=" + (((this.state.page - 1) * 25) - 1) + "&before=" + this.state.before)
+      .then(res => res.json())
+      .then((data) => {
+        window.scrollTo(0, 0);
+        let newState = {
+          files: data.data.children,
+          after: data.data.after,
+          before: data.data.before
+        }
+        if (this.state.page > 1) {
+          newState.page = this.state.page - 1
+        }
+        this.setState(newState)
+      })
+      .catch(console.log)
   }
 
   changeSubreddit(sub) {
-    this.setState({files: []});
-    this.setState({currentSubreddit: sub});
-    this.setState({page: 1})
+    /* 
+     * Empty the files so we will show 'Loading...'
+     * Reset page to 1
+     */
+    this.setState({
+      files: [],
+      currentSubreddit: sub,
+      page: 1
+    });
     fetch(this.url + sub + "/" + this.state.sort + '.json')
-    .then(res => res.json())
-    .then((data) => {
-      this.setState({files: data.data.children});
-      this.setState({after: data.data.after});
-      this.setState({before: data.data.before});
-    window.scrollTo(0,0);
-    })
-    .catch(console.log)
+      .then(res => res.json())
+      .then((data) => {
+        this.setState({
+          files: data.data.children,
+          after: data.data.after,
+          before: data.data.before
+        });
+        window.scrollTo(0, 0);
+      })
+      .catch(console.log)
   }
 
   changeSort(sort) {
-    this.setState({files: []});
-    this.setState({sort: sort});
-    this.setState({page: 1})
-    fetch(this.url + this.state.currentSubreddit + "/" + sort + '.json')
-    .then(res => res.json())
-    .then((data) => {
-      this.setState({files: data.data.children});
-      this.setState({after: data.data.after});
-      this.setState({before: data.data.before});
-    window.scrollTo(0,0);
+    /* 
+     * Empty the files so we will show 'Loading...'
+     * Reset page to 1
+     */
+    this.setState({
+      files: [],
+      sort: sort,
+      page: 1
     })
-    .catch(console.log)
+    fetch(this.url + this.state.currentSubreddit + "/" + sort + '.json')
+      .then(res => res.json())
+      .then((data) => {
+        this.setState({
+          files: data.data.children,
+          after: data.data.after,
+          before: data.data.before
+        });
+        window.scrollTo(0, 0);
+      })
+      .catch(console.log)
   }
 
   searchSubreddit(subreddit) {
@@ -118,9 +141,11 @@ class App extends React.Component {
 
     let currentSubreddit;
     if (this.state.currentSubreddit === this.wallpaperSubreddits) {
-      currentSubreddit = "All Wallpapers";
+      currentSubreddit = "Landscape Wallpapers";
+    } else if (this.state.currentSubreddit === this.portraitSubreddits) {
+      currentSubreddit = "Portrait Wallpapers";
     } else if (this.state.currentSubreddit === this.memesSubreddits) {
-      currentSubreddit = "All Memes";
+      currentSubreddit = "Memes Subreddits";
     } else {
       currentSubreddit = "r/" + this.state.currentSubreddit;
     }
@@ -134,8 +159,9 @@ class App extends React.Component {
               {currentSubreddit} &nbsp;
             </button>
             <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.wallpaperSubreddits)}>All Wallpapers</a>
-              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.memesSubreddits)}>All Memes</a>
+              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.wallpaperSubreddits)}>Landscape Wallpapers</a>
+              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.portraitSubreddits)}>Portrait Wallpapers</a>
+              <a className="dropdown-item" href="#subChange" onClick={() => this.changeSubreddit(this.memesSubreddits)}>Memes Subreddits</a>
               {this.subredditsArray.map((subreddit, index) => (
                 <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSubreddit(subreddit)}>r/{subreddit}</a>
               ))}
@@ -147,7 +173,7 @@ class App extends React.Component {
             </button>
             <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {this.sorts.map((sort, index) => (
-                <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>r/{sort}</a>
+                <a className="dropdown-item" key={index} href="#subChange" onClick={() => this.changeSort(sort)}>{sort}</a>
               ))}
             </div>
           </div>
@@ -157,7 +183,7 @@ class App extends React.Component {
         <br/>
         {contentJSX}
         <br/>
-        <footer><p><center>Open-source available on <a href="https://github.com/gauravjot/react-reddit-wallpapers">Github</a>.</center></p></footer>
+        <footer><center><p>Open-source available on <a href="https://github.com/gauravjot/react-reddit-wallpapers">Github</a>.</p></center></footer>
       </div>
     );
   }
