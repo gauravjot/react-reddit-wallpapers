@@ -1,16 +1,27 @@
-## Simple React Wallpaper App For Reddit
+# RedditWal
 
-Demo at: [https://droidheat.com/r-wallpapers](https://droidheat.com/r-wallpapers)
+<small>Updated: Merged sister repository. Read more about it here [MERGED.md](MERGED.md).</small>
 
-This react application uses Reddit APIs and grab wallpapers from popular subreddits. The concepts used during the development are: react classes, states, fetch and components. The codebase is error free and exceptions have been handled properly.
+Check the live web app here: [https://gauravjot.github.io/redditwal/](https://gauravjot.github.io/redditwal/).
 
-Download or clone the project and then in the project directory, you can run:
+## Features
 
-### `npm start`
+-   Browse popular image based subreddits.
+-   Infinite scrolling for easy exploring.
+-   No ads whatsoever.
+-   Download highest qaulity images only.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Preview
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+![screenshot](Capture.JPG)
 
+## Running Locally
+
+Install Nodejs from https://nodejs.org/en/download/ and then clone the repository. `cd` into the directory and run following commands.
+
+-   Run _`npm install`_
+-   Run _`npm start`_
+
+The project should be running on `localhost:3000`.
+
+To build project run _`npm run-script build`_.
