@@ -4,7 +4,6 @@ import React from "react";
 import "./App.css";
 
 import WallpaperCard from "./components/WallpaperCard";
-import { json } from "react-router-dom";
 import { pageScrollLength } from "./Utils";
 
 function App() {
@@ -27,7 +26,7 @@ function App() {
 		setData([]);
 		setIsLoading(true);
 		axios
-			.get(baseURL + currentSub + "/" + currentSort + ".json?count=" + (page * 100))
+			.get(baseURL + currentSub + "/" + currentSort + ".json?count=" + page * 100)
 			.then((response) => {
 				setData(response.data.data.children);
 				setAfter(response.data.data.after);
@@ -36,40 +35,49 @@ function App() {
 			.catch((err) => {
 				setIsErrorResponse(true);
 			});
-	}, [currentSub]);  
+	}, [currentSub]);
 
 	React.useEffect(() => {
 		function handleInfiniteScroll() {
 			// Calculate how much scroll is needed to trigger based on number of pages
-			let scrollRequired = 100 - (20 / page);
+			let scrollRequired = 100 - 20 / page;
 			scrollRequired = scrollRequired > 96 ? 96 : scrollRequired;
 			if (!isLoading && data.length > 0 && pageScrollLength() > scrollRequired) {
 				setIsLoading(true);
 				const nextPageNum = page + 1;
 				setPage(nextPageNum);
 				axios
-				.get(baseURL + currentSub + "/" + currentSort + ".json?count=" + (nextPageNum * 100) + "&after=" + after)
-				.then((response) => {
-					const ldata = [...data, ...response.data.data.children];
-					setData(ldata);
-					setAfter(response.data.data.after);
-					setIsLoading(false);
-				})
-				.catch((err) => {
-					setIsErrorResponse(true);
-					setIsLoading(false);
-				});
+					.get(
+						baseURL +
+							currentSub +
+							"/" +
+							currentSort +
+							".json?count=" +
+							nextPageNum * 100 +
+							"&after=" +
+							after
+					)
+					.then((response) => {
+						const ldata = [...data, ...response.data.data.children];
+						setData(ldata);
+						setAfter(response.data.data.after);
+						setIsLoading(false);
+					})
+					.catch((err) => {
+						setIsErrorResponse(true);
+						setIsLoading(false);
+					});
 			}
-		}	
+		}
 		window.addEventListener("scroll", handleInfiniteScroll);
 		return () => {
 			window.removeEventListener("scroll", handleInfiniteScroll);
-		}
-	})
+		};
+	});
 
-	React.useEffect(()=>{
-		window.scrollTo({ top: 0, behavior: 'smooth' });
-	},[])
+	React.useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, []);
 
 	function subChange(sub) {
 		if (sub.length < 1) {
@@ -222,8 +230,14 @@ function App() {
 						<i className="fas fa-exclamation-triangle"></i>
 						<div>Network Error or Sub does not exist :/</div>
 					</div>
-				): <></>}
-				{isLoading && <div className={pageScrollLength() > 20 ? "stay-fixed-br":""}><div className="lds-dual-ring"></div></div>}
+				) : (
+					<></>
+				)}
+				{isLoading && (
+					<div className={pageScrollLength() > 20 ? "stay-fixed-br" : ""}>
+						<div className="lds-dual-ring"></div>
+					</div>
+				)}
 			</div>
 		</section>
 	);
