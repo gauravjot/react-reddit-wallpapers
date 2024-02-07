@@ -2,7 +2,7 @@
 
 <small>Updated: Merged sister repository. Read more about it here [MERGED.md](MERGED.md).</small>
 
-Check the live web app here: [https://gauravjot.github.io/redditwal/](https://gauravjot.github.io/redditwal/).
+Check the live web app here: [https://gauravjot.github.io/wallpapers/](https://gauravjot.github.io/wallpapers/).
 
 ## Features
 
