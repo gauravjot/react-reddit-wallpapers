@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/react-reddit-wallpapers/static/css/main.c627560b.css",
+    "main.js": "/react-reddit-wallpapers/static/js/main.c32b4c60.js",
+    "index.html": "/react-reddit-wallpapers/index.html",
+    "main.c627560b.css.map": "/react-reddit-wallpapers/static/css/main.c627560b.css.map",
+    "main.c32b4c60.js.map": "/react-reddit-wallpapers/static/js/main.c32b4c60.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c627560b.css",
+    "static/js/main.c32b4c60.js"
+  ]
+}
