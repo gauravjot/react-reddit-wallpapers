@@ -2,7 +2,7 @@
 	"name": "redditwal",
 	"version": "2024.02.06",
 	"private": true,
-	"homepage": "/wallpapers/",
+	"homepage": "/react-reddit-wallpapers/",
 	"dependencies": {
 		"axios": "^0.27.2",
 		"history": "^5.3.0",
