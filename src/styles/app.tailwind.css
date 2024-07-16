@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
 *,
@@ -122,10 +126,10 @@ input[type="text"]:hover {
 
 .dropdown .menu {
 	position: absolute;
-	bottom: -3.75rem;
+	top: 3.25rem;
 	right: 0;
 	z-index: 1;
-	background-color: hsl(240, 29%, 33%);
+	background-color: hsl(240, 31%, 13%);
 	padding: 0.45rem;
 	border-radius: 0.75rem;
 	box-shadow: 0 0 0.5rem 0.5rem rgba(0, 0, 0, 0.25);
@@ -140,7 +144,7 @@ input[type="text"]:hover {
 }
 
 .dropdown .menu .menu-item {
-	min-width: 12rem;
+	min-width: 14rem;
 	text-align: left;
 	color: rgba(255, 255, 255, 0.8);
 	display: flex;
@@ -154,10 +158,6 @@ input[type="text"]:hover {
 .dropdown .menu .menu-item:hover {
 	background-color: rgba(255, 255, 255, 0.1);
 	border-radius: 0.5rem;
-}
-
-.dropdown .menu .menu-item span {
-	/* font-size: 1rem; */
 }
 
 .dropdown .menu .menu-item label {
@@ -231,7 +231,7 @@ input[type="text"]:hover {
 	border-bottom-left-radius: 0.45rem;
 	border-bottom-right-radius: 0.45rem;
 	width: 100%;
-	background: linear-gradient(transparent, rgba(0,0,0, 0.75));
+	background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
 	padding-top: 4rem;
 	padding-left: 1rem;
 	padding-right: 1rem;
@@ -423,21 +423,21 @@ input[type="text"]:hover {
 }
 
 .stay-fixed-br {
-	position:fixed;
-	bottom:0;
-	right:0;
-	padding:1rem 0.75rem 0.75rem 1rem;
-	background:rgba(255,255,255, 0.15);
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 1rem 0.75rem 0.75rem 1rem;
+	background: rgba(255, 255, 255, 0.15);
 	backdrop-filter: blur(5px);
 	border-top-left-radius: 2rem;
 }
 
 .stay-fixed-br .lds-dual-ring {
-	margin:0;
+	margin: 0;
 }
 
 .stay-fixed-br .lds-dual-ring::after {
-	width:40px;
-	height:40px;
+	width: 40px;
+	height: 40px;
 	border-width: 5px;
 }

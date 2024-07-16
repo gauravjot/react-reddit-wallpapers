@@ -1,7 +1,7 @@
 import axios from "axios";
 import _ from "lodash";
 import React from "react";
-import "./App.css";
+import "./styles/compiled/app.css";
 
 import WallpaperCard from "./components/WallpaperCard";
 import { pageScrollLength } from "./Utils";
@@ -15,6 +15,8 @@ function App() {
 	const [after, setAfter] = React.useState();
 	const currentSort = "hot";
 	const [nsfwFilter, setNsfwFilter] = React.useState(false);
+	const [showWidescreen, setShowWidescreen] = React.useState(false);
+	const [show4k, setShow4k] = React.useState(false);
 
 	const [data, setData] = React.useState([]);
 	const [isErrorResponse, setIsErrorResponse] = React.useState(false);
@@ -118,6 +120,7 @@ function App() {
 		   add more for exceptions */
 		if (
 			!document.getElementById("settings-menu")?.contains(e.target) &&
+			settingsRef.current &&
 			!settingsRef.current.contains(e.target)
 		) {
 			toggleSettings();
@@ -191,12 +194,51 @@ function App() {
 										" ic-md invert-1"
 									}
 								></span>
-								<label htmlFor="nsfwFilter">Enable NSFW</label>
+								<label>Enable NSFW</label>
+							</button>
+							<button
+								className="menu-item"
+								onClick={() => {
+									setShowWidescreen(!showWidescreen);
+								}}
+							>
+								<span
+									className={
+										(showWidescreen ? "ic-checked" : "ic-unchecked") +
+										" ic-md invert-1"
+									}
+								></span>
+								<label>Show only Widescreen</label>
+							</button>
+							<button
+								className="menu-item"
+								onClick={() => {
+									setShow4k(!show4k);
+								}}
+							>
+								<span
+									className={
+										(show4k ? "ic-checked" : "ic-unchecked") +
+										" ic-md invert-1"
+									}
+								></span>
+								<label>Show 4K or above</label>
 							</button>
 						</div>
 					</div>
 				</div>
 			</div>
+			{isLoading && (
+				<div
+					className={
+						pageScrollLength() > 20
+							? "stay-fixed-br"
+							: "flex place-items-center justify-center min-h-screen w-full"
+					}
+				>
+					<div className="lds-dual-ring"></div>
+				</div>
+			)}
 			<div className="wallpapers">
 				{data.length > 0 ? (
 					data.map((item) =>
@@ -205,19 +247,40 @@ function App() {
 							item.data.preview.images[0].resolutions[
 								item.data.preview.images[0].resolutions.length - 1
 							] ? (
-								<div
-									key={item.data.id}
-									className={aspectClassSwitch(
-										item.data.preview.images[0].source.width,
-										item.data.preview.images[0].source.height
-									)}
-								>
-									<WallpaperCard
-										baseURL={baseURL}
-										wallpaper={item.data}
-										nsfwFilter={nsfwFilter}
-									/>
-								</div>
+								(show4k &&
+									parseInt(item.data.preview.images[0].source.width) >=
+										3840 &&
+									parseInt(item.data.preview.images[0].source.height) >=
+										2160) ||
+								!show4k ? (
+									(showWidescreen &&
+										parseInt(
+											item.data.preview.images[0].source.width
+										) /
+											parseInt(
+												item.data.preview.images[0].source.height
+											) >
+											2.3) ||
+									!showWidescreen ? (
+										<div
+											key={item.data.id}
+											className={aspectClassSwitch(
+												item.data.preview.images[0].source.width,
+												item.data.preview.images[0].source.height
+											)}
+										>
+											<WallpaperCard
+												baseURL={baseURL}
+												wallpaper={item.data}
+												nsfwFilter={nsfwFilter}
+											/>
+										</div>
+									) : (
+										""
+									)
+								) : (
+									""
+								)
 							) : (
 								""
 							)
@@ -232,11 +295,6 @@ function App() {
 					</div>
 				) : (
 					<></>
-				)}
-				{isLoading && (
-					<div className={pageScrollLength() > 20 ? "stay-fixed-br" : ""}>
-						<div className="lds-dual-ring"></div>
-					</div>
 				)}
 			</div>
 		</section>
