@@ -1,8 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
 *,
 *::before,
@@ -68,10 +69,6 @@ input[type="text"]:hover {
 	background-color: hsl(240, 29%, 33%);
 	outline: none;
 	box-shadow: 0 0 0 0.35rem rgba(85, 85, 189, 0.2);
-}
-
-.flex {
-	display: flex;
 }
 
 #nav-bar {

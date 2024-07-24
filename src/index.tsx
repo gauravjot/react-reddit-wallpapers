@@ -2,17 +2,12 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { createBrowserHistory } from "history";
 
-export const history = createBrowserHistory({
-	basename: process.env.PUBLIC_URL,
-});
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
 	<React.StrictMode>
-		<Router basename={"/react-reddit-wallpapers"} history={history}>
+		<Router basename={"/react-reddit-wallpapers"}>
 			<Routes>
 				<Route path="/" element={<App />} />
 			</Routes>

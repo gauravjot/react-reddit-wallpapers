@@ -4,6 +4,7 @@
 	"private": true,
 	"homepage": "/react-reddit-wallpapers/",
 	"dependencies": {
+		"@vitejs/plugin-react": "^4.3.1",
 		"axios": "^1.7.2",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
@@ -12,18 +13,12 @@
 		"lucide-react": "^0.408.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.4.2",
-		"react-scripts": "^5.0.1",
-		"tailwind-merge": "^2.4.0",
-		"tailwindcss-animate": "^1.0.7"
+		"react-router-dom": "^6.4.2"
 	},
 	"scripts": {
-		"start": "react-scripts start",
-		"build": "npm run css && react-scripts build",
-		"test": "react-scripts test",
-		"css": "npx tailwindcss -i ./src/styles/app.tailwind.css -o ./src/styles/compiled/app.css",
-		"wcss": "npx tailwindcss -i ./src/styles/app.tailwind.css -o ./src/styles/compiled/app.css --watch",
-		"eject": "react-scripts eject"
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
 	},
 	"eslintConfig": {
 		"extends": [
@@ -44,6 +39,17 @@
 		]
 	},
 	"devDependencies": {
-		"tailwindcss": "^3.4.5"
+		"@types/lodash": "^4.17.7",
+		"@types/react": "^18.2.58",
+		"@types/react-dom": "^18.2.19",
+		"@vitejs/plugin-react": "^4.2.1",
+		"autoprefixer": "^10.4.17",
+		"postcss": "^8.4.35",
+		"tailwind-merge": "^2.4.0",
+		"tailwindcss": "^3.4.5",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "^5.5.4",
+		"vite": "^5.3.4",
+		"vite-tsconfig-paths": "^4.3.2"
 	}
 }

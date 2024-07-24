@@ -1,10 +1,32 @@
 import axios from "axios";
 import _ from "lodash";
 import React from "react";
-import "./styles/compiled/app.css";
+import "./styles/app.tailwind.css";
 
 import WallpaperCard from "./components/WallpaperCard";
-import { pageScrollLength } from "./Utils";
+import { pageScrollLength } from "./lib/pageScrollUtil";
+import useLocalStorage from "./hooks/useLocalStorage";
+
+
+export type WallpaperType = {
+	id: string;
+	url: string;
+	over_18: boolean;
+	preview: {
+		enabled: boolean;
+		images: {
+			resolutions: {
+				url: string;
+			}[];
+			source: {
+				width: number;
+				height: number;
+			}
+		}[];
+	};
+	title: string;
+	subreddit: string;
+}
 
 function App() {
 	const wallpaperSubs = "wallpapers+wallpaper+widescreenwallpaper+WQHD_Wallpaper";
@@ -14,11 +36,13 @@ function App() {
 	const [page, setPage] = React.useState(1);
 	const [after, setAfter] = React.useState();
 	const currentSort = "hot";
-	const [nsfwFilter, setNsfwFilter] = React.useState(false);
-	const [showWidescreen, setShowWidescreen] = React.useState(false);
-	const [show4k, setShow4k] = React.useState(false);
+	const [nsfwFilter, setNsfwFilter] = useLocalStorage<boolean>('showNSFWfilter', false);
+	const [showWidescreen, setShowWidescreen] = useLocalStorage<boolean>('showwidescreenfilter', false);
+	const [show4k, setShow4k] = useLocalStorage<boolean>('show4kfilter', false);
 
-	const [data, setData] = React.useState([]);
+	const [data, setData] = React.useState<{
+		data: WallpaperType
+	}[]>([]);
 	const [isErrorResponse, setIsErrorResponse] = React.useState(false);
 	const [isLoading, setIsLoading] = React.useState(false);
 	let settingsRef = React.useRef(null);
@@ -81,7 +105,7 @@ function App() {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}, []);
 
-	function subChange(sub) {
+	function subChange(sub: string) {
 		if (sub.length < 1) {
 			setCurrentSub(wallpaperSubs);
 			return;
@@ -92,9 +116,9 @@ function App() {
 		setCurrentSub(sub);
 	}
 
-	const _subChange = _.debounce((sub) => subChange(sub), 600);
+	const _subChange = _.debounce((sub: string) => subChange(sub), 600);
 
-	function aspectClassSwitch(width, height) {
+	function aspectClassSwitch(width: number, height: number) {
 		let a_ratio = width / height;
 		switch (true) {
 			case a_ratio > 3.5:
@@ -110,121 +134,76 @@ function App() {
 		}
 	}
 
-	const toggleEventHandler = React.useCallback((e) => {
-		/* useCallback so function doesnt change in re-renders
-       otherwise our add/remove eventListeners will go haywire */
-		/* whitelisted with if-else loop:
-		   1. The menu box
-		   2. The button which is toggle
-		   3. Close-icon in Multiselect
-		   add more for exceptions */
-		if (
-			!document.getElementById("settings-menu")?.contains(e.target) &&
-			settingsRef.current &&
-			!settingsRef.current.contains(e.target)
-		) {
-			toggleSettings();
-		}
-	}, []);
-
-	/* Filter Toggle */
-	const toggleSettings = () => {
-		if (settingsRef.current) {
-			let attribValue = settingsRef.current.getAttribute("aria-hidden");
-			settingsRef.current.setAttribute(
-				"aria-hidden",
-				attribValue === "true" ? "false" : "true"
-			);
-			if (attribValue === "true" ? false : true) {
-				window.removeEventListener("click", toggleEventHandler);
-			} else {
-				// Detect clicks outside of filter box
-				window.addEventListener("click", toggleEventHandler);
-			}
-		}
-	};
-
 	let prevScrollpos = window.pageYOffset;
 	window.onscroll = function () {
-		let currentScrollPos = window.pageYOffset;
-		if (currentScrollPos < 200 || prevScrollpos > currentScrollPos) {
-			document.getElementById("nav-bar").style.top = "0";
-		} else {
-			settingsRef.current.setAttribute("aria-hidden", "true");
-			window.removeEventListener("click", toggleEventHandler);
-			document.getElementById("nav-bar").style.top = "-6rem";
+		const element = document.getElementById("nav-bar");
+		if (element !== null && window.innerWidth >= 1024) {
+			let currentScrollPos = window.pageYOffset;
+			if (currentScrollPos < 200 || prevScrollpos > currentScrollPos) {
+				element.style.top = "0";
+			} else {
+				element.style.top = "-6rem";
+			}
+			prevScrollpos = currentScrollPos;
 		}
-		prevScrollpos = currentScrollPos;
 	};
 
 	return (
 		<section className="container">
 			<div className="searchbar" id="nav-bar">
-				<div className="container flex">
+				<div className="container flex flex-col lg:flex-row">
 					<input
 						type="text"
 						name="subreddit"
 						placeholder="start typing a subreddit..."
 						onChange={(event) => _subChange(event.target.value.trim())}
 					/>
-					<div className="dropdown" id="settings-menu">
+					<div className="flex flex-wrap lg:flex-nowrap place-items-center gap-4 pt-4 lg:pt-0">
+						<div className="lg:ml-8 font-medium text-sm">
+							Show
+						</div>
 						<button
-							className="btnSettings"
+							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (nsfwFilter ? "opacity-100" : "opacity-70")}
 							onClick={() => {
-								toggleSettings();
+								setNsfwFilter(!nsfwFilter);
 							}}
 						>
-							<span className="ic ic-settings invert-1"></span>
+							<span
+								className={
+									(nsfwFilter ? "ic-checked" : "ic-unchecked") +
+									" ic invert-1"
+								}
+							></span>
+							<div className="whitespace-nowrap">NSFW</div>
 						</button>
-						<div
-							className="menu"
-							id="options"
-							aria-hidden="true"
-							ref={settingsRef}
+						<button
+							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (showWidescreen ? "opacity-100" : "opacity-70")}
+							onClick={() => {
+								setShowWidescreen(!showWidescreen);
+							}}
 						>
-							<button
-								className="menu-item"
-								onClick={() => {
-									setNsfwFilter(!nsfwFilter);
-								}}
-							>
-								<span
-									className={
-										(nsfwFilter ? "ic-checked" : "ic-unchecked") +
-										" ic-md invert-1"
-									}
-								></span>
-								<label>Enable NSFW</label>
-							</button>
-							<button
-								className="menu-item"
-								onClick={() => {
-									setShowWidescreen(!showWidescreen);
-								}}
-							>
-								<span
-									className={
-										(showWidescreen ? "ic-checked" : "ic-unchecked") +
-										" ic-md invert-1"
-									}
-								></span>
-								<label>Show only Widescreen</label>
-							</button>
-							<button
-								className="menu-item"
-								onClick={() => {
-									setShow4k(!show4k);
-								}}
-							>
-								<span
-									className={
-										(show4k ? "ic-checked" : "ic-unchecked") +
-										" ic-md invert-1"
-									}
-								></span>
-								<label>Show 4K or above</label>
-							</button>
-						</div>
+							<span
+								className={
+									(showWidescreen ? "ic-checked" : "ic-unchecked") +
+									" ic invert-1"
+								}
+							></span>
+							<div className="whitespace-nowrap">Only Widescreen</div>
+						</button>
+						<button
+							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (show4k ? "opacity-100" : "opacity-70")}
+							onClick={() => {
+								setShow4k(!show4k);
+							}}
+						>
+							<span
+								className={
+									(show4k ? "ic-checked" : "ic-unchecked") +
+									" ic invert-1"
+								}
+							></span>
+							<div className="whitespace-nowrap">4K or above</div>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -248,16 +227,16 @@ function App() {
 								item.data.preview.images[0].resolutions.length - 1
 							] ? (
 								(show4k &&
-									parseInt(item.data.preview.images[0].source.width) >=
+									(item.data.preview.images[0].source.width) >=
 										3840 &&
-									parseInt(item.data.preview.images[0].source.height) >=
+									(item.data.preview.images[0].source.height) >=
 										2160) ||
 								!show4k ? (
 									(showWidescreen &&
-										parseInt(
+										(
 											item.data.preview.images[0].source.width
 										) /
-											parseInt(
+											(
 												item.data.preview.images[0].source.height
 											) >
 											2.3) ||
@@ -270,7 +249,6 @@ function App() {
 											)}
 										>
 											<WallpaperCard
-												baseURL={baseURL}
 												wallpaper={item.data}
 												nsfwFilter={nsfwFilter}
 											/>

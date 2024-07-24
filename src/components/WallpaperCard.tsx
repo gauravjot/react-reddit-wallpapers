@@ -1,6 +1,7 @@
 import React from "react";
+import { WallpaperType } from "../App";
 
-export default function WallpaperCard({ baseURL, wallpaper, nsfwFilter }) {
+export default function WallpaperCard({ wallpaper, nsfwFilter }: {wallpaper: WallpaperType; nsfwFilter: boolean}) {
 	return (
 		<a
 			className="wallpaper"
