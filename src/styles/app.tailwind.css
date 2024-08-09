@@ -185,16 +185,11 @@ input[type="text"]:hover {
 
 .wallpapers {
 	width: 100%;
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	grid-auto-flow: dense;
-	gap: 1.45rem;
 	margin-bottom: 1.5rem;
 	padding-top: 5.25rem;
 }
 
 .wallpapers .lds-dual-ring {
-	grid-column: 2/3;
 	margin-top: 5rem;
 }
 
@@ -217,7 +212,7 @@ input[type="text"]:hover {
 	border-radius: 0.5rem;
 }
 
-.grid-row-span-2 img {
+.row-span-2 img {
 	height: 670px;
 }
 
@@ -300,18 +295,6 @@ input[type="text"]:hover {
 	text-transform: uppercase;
 }
 
-.grid-row-span-2 {
-	grid-row: span 2;
-}
-
-.grid-span-2 {
-	grid-column: span 2;
-}
-
-.grid-span-3 {
-	grid-column: span 3;
-}
-
 .nsfw {
 	filter: blur(2rem);
 	opacity: 0.5;
@@ -387,27 +370,13 @@ input[type="text"]:hover {
 
 @media (max-width: 1200px) {
 	.container {
-		width: 94%;
-	}
-	.wallpapers {
-		grid-template-columns: repeat(2, 1fr);
-		grid-template-rows: masonry;
-		gap: 1.25rem;
+		width: 98%;
 	}
 }
 
 @media (max-width: 720px) {
 	.container {
-		width: 92%;
-	}
-
-	.wallpapers {
-		grid-template-columns: repeat(auto-fit, 100%);
-		gap: 1rem;
-	}
-
-	.grid-span-2 {
-		grid-column: unset;
+		width: 100%;
 	}
 
 	.card {

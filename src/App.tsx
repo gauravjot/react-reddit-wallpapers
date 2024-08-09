@@ -6,6 +6,7 @@ import "./styles/app.tailwind.css";
 import WallpaperCard from "./components/WallpaperCard";
 import { pageScrollLength } from "./lib/pageScrollUtil";
 import useLocalStorage from "./hooks/useLocalStorage";
+import { Frown, TriangleAlert, X } from "lucide-react";
 
 
 export type WallpaperType = {
@@ -30,7 +31,7 @@ export type WallpaperType = {
 
 function App() {
 	const wallpaperSubs = "wallpapers+wallpaper+widescreenwallpaper+WQHD_Wallpaper";
-	const baseURL = "https://www.reddit.com/r/";
+	const baseURL = "https://corsproxy.io/?https://www.reddit.com/r/";
 
 	const [currentSub, setCurrentSub] = React.useState(wallpaperSubs);
 	const [page, setPage] = React.useState(1);
@@ -39,13 +40,14 @@ function App() {
 	const [nsfwFilter, setNsfwFilter] = useLocalStorage<boolean>('showNSFWfilter', false);
 	const [showWidescreen, setShowWidescreen] = useLocalStorage<boolean>('showwidescreenfilter', false);
 	const [show4k, setShow4k] = useLocalStorage<boolean>('show4kfilter', false);
+	const wallpapersRef = React.useRef<HTMLDivElement>(null);
+	const inputBarRef = React.useRef<HTMLInputElement>(null);
 
 	const [data, setData] = React.useState<{
 		data: WallpaperType
 	}[]>([]);
 	const [isErrorResponse, setIsErrorResponse] = React.useState(false);
 	const [isLoading, setIsLoading] = React.useState(false);
-	let settingsRef = React.useRef(null);
 
 	React.useEffect(() => {
 		setIsErrorResponse(false);
@@ -63,41 +65,58 @@ function App() {
 			});
 	}, [currentSub]);
 
+	function loadNextPage() {
+		setIsLoading(true);
+		const nextPageNum = page + 1;
+		setPage(nextPageNum);
+		axios
+			.get(
+				baseURL +
+					currentSub +
+					"/" +
+					currentSort +
+					".json?count=" +
+					nextPageNum * 100 +
+					"&after=" +
+					after
+			)
+			.then((response) => {
+				const ldata = [...data, ...response.data.data.children];
+				setData(ldata);
+				setAfter(response.data.data.after);
+				setIsLoading(false);
+				if (data.length === 0 && response.data.data.after === null) {
+					setIsErrorResponse(true);
+				}
+			})
+			.catch((err) => {
+				setIsErrorResponse(true);
+				setIsLoading(false);
+			});
+	}
+
+	function checkIfNoWallpapers() {
+		if (wallpapersRef.current && wallpapersRef.current?.childNodes.length < 10 && !isLoading && !isErrorResponse) {
+			loadNextPage();
+		}
+	}
+
 	React.useEffect(() => {
 		function handleInfiniteScroll() {
 			// Calculate how much scroll is needed to trigger based on number of pages
 			let scrollRequired = 100 - 20 / page;
 			scrollRequired = scrollRequired > 96 ? 96 : scrollRequired;
 			if (!isLoading && data.length > 0 && pageScrollLength() > scrollRequired) {
-				setIsLoading(true);
-				const nextPageNum = page + 1;
-				setPage(nextPageNum);
-				axios
-					.get(
-						baseURL +
-							currentSub +
-							"/" +
-							currentSort +
-							".json?count=" +
-							nextPageNum * 100 +
-							"&after=" +
-							after
-					)
-					.then((response) => {
-						const ldata = [...data, ...response.data.data.children];
-						setData(ldata);
-						setAfter(response.data.data.after);
-						setIsLoading(false);
-					})
-					.catch((err) => {
-						setIsErrorResponse(true);
-						setIsLoading(false);
-					});
+				loadNextPage();
 			}
 		}
 		window.addEventListener("scroll", handleInfiniteScroll);
+		const wallpaperCheckTimeout = setTimeout(()=>{
+			checkIfNoWallpapers();
+		}, 100);
 		return () => {
 			window.removeEventListener("scroll", handleInfiniteScroll);
+			clearTimeout(wallpaperCheckTimeout);
 		};
 	});
 
@@ -122,13 +141,13 @@ function App() {
 		let a_ratio = width / height;
 		switch (true) {
 			case a_ratio > 3.5:
-				return "card grid-span-3";
+				return "card col-span-1 md:col-span-2 xl:col-span-3";
 			case a_ratio > 2.2:
-				return "card grid-span-2";
+				return "card col-span-1 md:col-span-2";
 			case a_ratio > 0.8:
-				return "card";
+				return "card col-span-1";
 			case a_ratio > 0.4:
-				return "card grid-row-span-2";
+				return "card row-span-2";
 			default:
 				return "d-none";
 		}
@@ -152,30 +171,32 @@ function App() {
 		<section className="container">
 			<div className="searchbar" id="nav-bar">
 				<div className="container flex flex-col lg:flex-row">
-					<input
-						type="text"
-						name="subreddit"
-						placeholder="start typing a subreddit..."
-						onChange={(event) => _subChange(event.target.value.trim())}
-					/>
+					<div className="flex-1 relative">
+						<input
+							type="text"
+							name="subreddit"
+							placeholder="start typing a subreddit..."
+							onChange={(event) => _subChange(event.target.value.trim())}
+							ref={inputBarRef}
+						/>
+						{inputBarRef.current && inputBarRef.current?.value.length > 0 && 
+							<button
+								className="absolute right-3 top-3 opacity-80 hover:opacity-100"
+								onClick={() => {
+									if (inputBarRef.current) {
+										inputBarRef.current.value = "";
+										_subChange("")
+									}
+								}}
+							>
+								<X className="w-5 h-5" />
+							</button>
+						}
+					</div>
 					<div className="flex flex-wrap lg:flex-nowrap place-items-center gap-4 pt-4 lg:pt-0">
 						<div className="lg:ml-8 font-medium text-sm">
-							Show
+							Show&nbsp;only
 						</div>
-						<button
-							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (nsfwFilter ? "opacity-100" : "opacity-70")}
-							onClick={() => {
-								setNsfwFilter(!nsfwFilter);
-							}}
-						>
-							<span
-								className={
-									(nsfwFilter ? "ic-checked" : "ic-unchecked") +
-									" ic invert-1"
-								}
-							></span>
-							<div className="whitespace-nowrap">NSFW</div>
-						</button>
 						<button
 							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (showWidescreen ? "opacity-100" : "opacity-70")}
 							onClick={() => {
@@ -188,7 +209,7 @@ function App() {
 									" ic invert-1"
 								}
 							></span>
-							<div className="whitespace-nowrap">Only Widescreen</div>
+							<div className="whitespace-nowrap"> Widescreen</div>
 						</button>
 						<button
 							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (show4k ? "opacity-100" : "opacity-70")}
@@ -204,13 +225,30 @@ function App() {
 							></span>
 							<div className="whitespace-nowrap">4K or above</div>
 						</button>
+						<div className="lg:ml-8 font-medium text-sm">
+							Enable
+						</div>
+						<button
+							className={"border border-white/50 px-2.5 place-items-center h-8 border-solid rounded-full text-xs inline-block flex gap-2 " + (nsfwFilter ? "opacity-100" : "opacity-70")}
+							onClick={() => {
+								setNsfwFilter(!nsfwFilter);
+							}}
+						>
+							<span
+								className={
+									(nsfwFilter ? "ic-checked" : "ic-unchecked") +
+									" ic invert-1"
+								}
+							></span>
+							<div className="whitespace-nowrap">NSFW</div>
+						</button>
 					</div>
 				</div>
 			</div>
 			{isLoading && (
 				<div
 					className={
-						pageScrollLength() > 20
+						pageScrollLength() > 20 || wallpapersRef.current?.hasChildNodes()
 							? "stay-fixed-br"
 							: "flex place-items-center justify-center min-h-screen w-full"
 					}
@@ -218,7 +256,7 @@ function App() {
 					<div className="lds-dual-ring"></div>
 				</div>
 			)}
-			<div className="wallpapers">
+			<div className="wallpapers grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" ref={wallpapersRef}>
 				{data.length > 0 ? (
 					data.map((item) =>
 						item.data.preview ? (
@@ -267,9 +305,9 @@ function App() {
 						)
 					)
 				) : isErrorResponse ? (
-					<div className="error">
-						<i className="fas fa-exclamation-triangle"></i>
-						<div>Network Error or Sub does not exist :/</div>
+					<div className="flex gap-4 items-center justify-center md:col-span-2 pt-32 xl:col-span-3">
+						<TriangleAlert className="w-8 h-8" />
+						<p className="text-2xl">Network Error or Sub does not exist :/</p>
 					</div>
 				) : (
 					<></>
